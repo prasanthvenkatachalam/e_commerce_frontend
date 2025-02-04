@@ -1,4 +1,3 @@
-// src/api/hooks/useLogin.ts
 import { useMutation } from "react-query";
 import axios from "axios";
 import { LoginCredentials, LoginResponse } from "@/types/auth.types";
@@ -6,22 +5,32 @@ import { AppDispatch } from "@/store/store";
 import { setAuth } from "@/store/authSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "@/hooks/use-toast";
+import Cookies from 'js-cookie';
+
+// Cookie configuration
+const COOKIE_OPTIONS = {
+  expires: 7, // Cookie expires in 7 days
+  secure: process.env.NODE_ENV === 'production', // Secure in production
+  sameSite: 'strict' as const
+};
 
 const login = async (credentials: LoginCredentials): Promise<LoginResponse> => {
   const response = await axios.post(
     "http://localhost:3000/api/auth/login",
     credentials
   );
-  return response.data.data; // Access the nested data property
+  return response.data.data;
 };
 
 export const useLogin = () => {
   const dispatch = useDispatch<AppDispatch>();
+  
   return useMutation(login, {
     onSuccess: (data) => {
+      // Set authentication data in Redux store
       dispatch(
         setAuth({
-          token: data.token, // Changed from data.accessToken to data.token
+          token: data.token,
           user: {
             id: data.user.id,
             email: data.user.email,
@@ -30,6 +39,10 @@ export const useLogin = () => {
           },
         })
       );
+
+      // Store authentication data in cookies
+      Cookies.set('auth_token', data.token, COOKIE_OPTIONS);
+
       // Show success toast
       toast({
         description: "Login successful",
@@ -37,10 +50,7 @@ export const useLogin = () => {
     },
     onError: (error: unknown) => {
       if (axios.isAxiosError(error)) {
-        // Check that there is a response and that there is a message
-        if (
-          error?.response?.data?.message
-        ) {
+        if (error?.response?.data?.message) {
           toast({
             variant: "destructive",
             description: error.response.data.message,

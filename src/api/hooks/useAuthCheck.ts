@@ -27,7 +27,7 @@ export const useAuthCheck = () => {
                 const token =  getCookie('auth_token');
                 if(token){
                     // If token exists then try and verify
-                    const response = await axios.post<TokenPayload>('http://localhost:3000/api/auth/verify', {},{
+                    const response = await axios.post<TokenPayload>('http://localhost:3000/api/auth/verify-token', {},{
                       headers: {
                          Authorization: `Bearer ${token}` // include the token in the authorization header
                         }

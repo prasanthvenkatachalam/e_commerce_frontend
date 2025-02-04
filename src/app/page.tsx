@@ -3,7 +3,9 @@ import { useLogout } from "@/api/hooks/useLogout";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store"; // Import the Root State type
 import { useRouter } from "next/navigation"; // use the router to redirect the user
-import LoginForm from "./components/LoginForm";
+import Loading from "./components/common/Loading";
+import { useEffect } from "react";
+import Cookies from 'js-cookie';
 
 /**
  * Component for main page.
@@ -25,28 +27,31 @@ export default function Home() {
   const handleLogout = () => {
     if (token) {
       logout(token); // if user exists, call the logout mutation
+      Cookies.remove('auth_token');
       router.push("/auth/login"); // Move to the login page
     }
   };
 
+useEffect(() => {
+  if (!user) {
+    router.replace("/auth/login");
+  }
+}, [token, router]);
+
+  if (!user) {
+    return <Loading />;
+  }
+
   return (
-    <main>
-    {/* If user is logged in, then show the details and log out button */}
-    {user ? (
-      <div>
+    <main className="min-h-screen flex items-center justify-center">
+     
         <div>
-          You are logged in as {user.email} with role {user.roleType}
+          <div>
+            You are logged in as {user.email} with role {user.roleType}
+          </div>
+          <button onClick={handleLogout}>Log out</button>
         </div>
-        <button onClick={handleLogout}>Log out</button>
-      </div>
-    ) : (
-      // Center the LoginForm specifically
-      <div className="flex justify-center items-center h-screen px-4">
-        <div className="max-w-[30rem] w-full p-6 rounded-lg">
-          <LoginForm />
-        </div>
-      </div>
-    )}
-  </main>
+     
+    </main>
   );
 }
