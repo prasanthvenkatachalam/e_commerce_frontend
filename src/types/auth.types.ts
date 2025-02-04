@@ -97,7 +97,7 @@ export interface LoginCredentials {
  * Data structure returned after successful authentication
  */
 export interface LoginResponse {
-    accessToken: string;
+    token: string;
     user: {
         id: string;
         email: string;
@@ -255,3 +255,22 @@ export const REDIS_PREFIXES = {
     TOKEN_BLACKLIST: 'blacklist:',
     RATE_LIMIT: 'rate-limit:'
 } as const;
+
+
+export interface Toast {
+    id: string;
+    title?: string;
+    message: string;
+    type: 'success' | 'error' | 'info' | 'warning';
+    action?: React.ReactNode;
+}
+
+//======================= TOAST TYPES =======================//
+export interface Toast {
+    id: string;
+    title?: string;
+    message: string;
+    type: 'success' | 'error' | 'info' | 'warning';
+    action?: React.ReactNode;
+     description?:string
+}

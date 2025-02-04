@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-
 import "./globals.css";
 import { Providers } from "@/store/provider";
 import { QueryProvider } from "@/lib/queryProvider";
+import AuthCheckWrapper from "./components/common/AuthCheckWrapper";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,9 +20,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={inter.className} suppressHydrationWarning>
         <QueryProvider>
-          <Providers>{children}</Providers>
+          <Providers>
+            <Toaster />
+            <AuthCheckWrapper>{children}</AuthCheckWrapper>
+          </Providers>
         </QueryProvider>
       </body>
     </html>
